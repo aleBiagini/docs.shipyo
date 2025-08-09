@@ -18,11 +18,24 @@ Some endpoints also support API key authentication via the `x-api-key` header:
 x-api-key: <your-api-key>
 ```
 
+## Response Codes
+
+| Status Code | Description |
+|-------------|-------------|
+| 200 | Success |
+| 201 | Created |
+| 400 | Bad Request - Invalid input data |
+| 401 | Unauthorized - Invalid credentials or missing authentication |
+| 403 | Forbidden - Insufficient permissions |
+| 404 | Not Found - Resource does not exist |
+| 500 | Internal Server Error |
+
 ## Response Format
 
-All API responses follow a standardized format:
+All API responses follow a standardized RESTful format. All responses are packed with RESTful status codes. The "success" key serves only as a mere decorator.
 
 **Success Response:**
+This format is for responses that are returned with 2xx status codes
 ```json
 {
   "success": true,
@@ -33,6 +46,7 @@ All API responses follow a standardized format:
 ```
 
 **Error Response:**
+This format is for responses that are returned with 4xx and 5xx status codes
 ```json
 {
   "success": false,
@@ -706,17 +720,7 @@ Retrieves the API key associated with a specific tenant.
 
 ---
 
-## Error Codes
 
-| Status Code | Description |
-|-------------|-------------|
-| 200 | Success |
-| 201 | Created |
-| 400 | Bad Request - Invalid input data |
-| 401 | Unauthorized - Invalid credentials or missing authentication |
-| 403 | Forbidden - Insufficient permissions |
-| 404 | Not Found - Resource does not exist |
-| 500 | Internal Server Error |
 
 ## Rate Limiting
 
