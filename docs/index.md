@@ -8,15 +8,13 @@ This document provides a comprehensive reference for the ShipYo API endpoints co
 
 ## Authentication
 
-All protected endpoints require a JWT token in the Authorization header:
-```
-Authorization: Bearer <your-jwt-token>
-```
+The ShipYo API uses different authentication methods depending on the endpoint:
 
-Some endpoints also support API key authentication via the `x-api-key` header:
-```
-x-api-key: <your-api-key>
-```
+- 🌐 **Anonymous**: No authentication required
+- 🔑 **API Key Only**: Requires `x-api-key` header
+- 🔒 **JWT Protected**: Requires both `x-api-key` and `Authorization` headers
+
+For detailed information about HTTP headers, see the [HTTP Headers Reference](/headers).
 
 ## Response Codes
 
@@ -60,13 +58,13 @@ This format is for responses that are returned with 4xx and 5xx status codes
 
 ## Authentication Endpoints
 
-### User Login
+### User Login 🌐
 
 **POST** `/api/User/login`
 
 Authenticates a user and returns a JWT token.
 
-**Authorization:** None (Anonymous)
+**Authorization:** 🌐 Anonymous
 
 **Request Body:**
 ```json
@@ -113,13 +111,13 @@ Authenticates a user and returns a JWT token.
 - `400 Bad Request`: Missing email or password
 - `401 Unauthorized`: Invalid credentials or missing tenant ID (production)
 
-### Generate JWT Token
+### Generate JWT Token 🌐
 
 **POST** `/api/Token/generate`
 
 Generates a JWT token using email and password (alternative login method).
 
-**Authorization:** None (Anonymous)
+**Authorization:** 🌐 Anonymous
 
 **Request Body:**
 ```json
@@ -138,13 +136,13 @@ Generates a JWT token using email and password (alternative login method).
 }
 ```
 
-### Generate Token from API Key
+### Generate Token from API Key 🔑
 
 **GET** `/api/Token/generate-from-apikey`
 
 Generates a JWT token based on a validated API key.
 
-**Authorization:** API Key (x-api-key header)
+**Authorization:** 🔑 API Key Only
 
 **Headers:**
 ```
@@ -160,13 +158,13 @@ x-api-key: your-api-key
 }
 ```
 
-### Request Password Reset
+### Request Password Reset 🌐
 
 **POST** `/api/User/request-password-reset`
 
 Sends a password reset link to the user's email.
 
-**Authorization:** None (Anonymous)
+**Authorization:** 🌐 Anonymous
 
 **Request Body:**
 ```json
@@ -239,13 +237,13 @@ Resets a user's password using a valid reset token.
 
 ## User Management Endpoints
 
-### Create User
+### Create User 🔒
 
 **POST** `/api/User/create`
 
 Creates a new user with auto-generated password sent via email.
 
-**Authorization:** Required (JWT Token)
+**Authorization:** 🔒 JWT Required
 
 **Request Body:**
 ```json
@@ -292,13 +290,13 @@ Creates a new user with auto-generated password sent via email.
 }
 ```
 
-### Get All Users
+### Get All Users 🔒
 
 **GET** `/api/User/getAll`
 
 Retrieves a paginated list of users with optional filtering.
 
-**Authorization:** Required (JWT Token)
+**Authorization:** 🔒 JWT Required
 
 **Query Parameters:**
 - `page` (int, optional): Page number (default: 1)

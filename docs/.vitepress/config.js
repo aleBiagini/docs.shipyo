@@ -1,6 +1,13 @@
 // docs/.vitepress/config.js
 
 export default {
+  vue: {
+    template: {
+      compilerOptions: {
+        isCustomElement: (tag) => tag.includes('-')
+      }
+    }
+  },
   title: 'ShipYo API',
   description: 'Complete API reference and integration guides for ShipYo services.',
 
@@ -25,46 +32,50 @@ export default {
         text: 'Getting Started',
         items: [
           { text: 'API Overview', link: '/' },
-          { text: 'Integration Guide', link: '/integration-guide' }
+          { text: 'Integration Guide', link: '/integration-guide' },
+          { text: 'Status Codes', link: '/status-codes' }
         ]
       },
       {
         text: 'Authentication',
         items: [
-          { text: 'User Login', link: '/#user-login' },
-          { text: 'Generate JWT Token', link: '/#generate-jwt-token' },
-          { text: 'Token from API Key', link: '/#generate-token-from-api-key' },
-          { text: 'Password Reset', link: '/#request-password-reset' }
+          { text: 'HTTP Headers', link: '/headers' },
+          { text: 'Troubleshooting', link: '/troubleshooting' },
+          { text: 'User Login', link: '/auth/login' },
+          { text: 'Generate JWT Token', link: '/auth/token' },
+          { text: 'Token from API Key', link: '/auth/token-from-key' },
+          { text: 'Password Reset', link: '/auth/password-reset' }
         ]
       },
       {
         text: 'User Management',
         items: [
-          { text: 'Create User', link: '/#create-user' },
-          { text: 'Get All Users', link: '/#get-all-users' },
-          { text: 'Get User by ID', link: '/#get-user-by-id' },
-          { text: 'Update User', link: '/#update-user' },
-          { text: 'Delete User', link: '/#delete-user' }
+          { text: 'Create User', link: '/users/create' },
+          { text: 'Get All Users', link: '/users/get-all' },
+          { text: 'Get User by ID', link: '/users/get-by-id' },
+          { text: 'Update User', link: '/users/update' },
+          { text: 'Delete User', link: '/users/delete' }
         ]
       },
       {
         text: 'Tenant Management',
         items: [
-          { text: 'Get All Tenants', link: '/#get-all-tenants' },
-          { text: 'Get Tenant by ID', link: '/#get-tenant-by-id' },
-          { text: 'Create Tenant', link: '/#create-tenant' },
-          { text: 'Update Tenant', link: '/#update-tenant' },
-          { text: 'Delete Tenant', link: '/#delete-tenant' }
+          { text: 'Get All Tenants', link: '/tenants/get-all' },
+          { text: 'Get Tenant by ID', link: '/tenants/get-by-id' },
+          { text: 'Create Tenant', link: '/tenants/create' },
+          { text: 'Update Tenant', link: '/tenants/update' },
+          { text: 'Delete Tenant', link: '/tenants/delete' }
         ]
       },
       {
         text: 'API Key Management',
         items: [
-          { text: 'Get All API Keys', link: '/#get-all-api-keys' },
-          { text: 'Get API Key by ID', link: '/#get-api-key-by-id' },
-          { text: 'Create API Key', link: '/#create-api-key' },
-          { text: 'Update API Key', link: '/#update-api-key' },
-          { text: 'Delete API Key', link: '/#delete-api-key' }
+          { text: 'Get All API Keys', link: '/api-keys/get-all' },
+          { text: 'Get API Key by ID', link: '/api-keys/get-by-id' },
+          { text: 'Create API Key', link: '/api-keys/create' },
+          { text: 'Update API Key', link: '/api-keys/update' },
+          { text: 'Delete API Key', link: '/api-keys/delete' },
+          { text: 'Get Tenant API Key', link: '/api-keys/get-tenant-key' }
         ]
       }
     ],
