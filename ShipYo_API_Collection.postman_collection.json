@@ -1,0 +1,1360 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "ShipYo API Collection",
+		"description": "Complete Postman collection for ShipYo API with authentication, user management, tenant management, and API key management endpoints.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test response status",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test response structure",
+									"pm.test(\"Response has required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"// Extract and store JWT token",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"jwt_token\", jsonData.data.token);",
+									"        console.log(\"JWT token saved to environment\");",
+									"        ",
+									"        // Store user info if available",
+									"        if (jsonData.data.user) {",
+									"            pm.environment.set(\"user_email\", jsonData.data.user.email);",
+									"            pm.environment.set(\"user_role_id\", jsonData.data.user.roleId);",
+									"            pm.environment.set(\"user_role_name\", jsonData.data.user.roleName);",
+									"        }",
+									"        ",
+									"        // Store default tenant ID if available",
+									"        if (jsonData.data.defaultTenantId) {",
+									"            pm.environment.set(\"default_tenant_id\", jsonData.data.defaultTenantId);",
+									"        }",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\",\n  \"tenantId\": {{tenant_id}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/User/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"login"
+							]
+						},
+						"description": "🌐 Anonymous endpoint - Authenticates a user and returns a JWT token. No API key required."
+					}
+				},
+				{
+					"name": "Generate JWT Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Extract and store JWT token",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data) {",
+									"        pm.environment.set(\"jwt_token\", jsonData.data);",
+									"        console.log(\"JWT token saved to environment\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Token/generate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Token",
+								"generate"
+							]
+						},
+						"description": "🌐 Anonymous endpoint - Generates a JWT token using email and password (alternative login method)."
+					}
+				},
+				{
+					"name": "Generate Token from API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Extract and store JWT token",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data) {",
+									"        pm.environment.set(\"jwt_token\", jsonData.data);",
+									"        console.log(\"JWT token generated from API key and saved to environment\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/Token/generate-from-apikey",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Token",
+								"generate-from-apikey"
+							]
+						},
+						"description": "🔑 API Key Only - Generates a JWT token based on a validated API key."
+					}
+				},
+				{
+					"name": "Request Password Reset",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user_email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/User/request-password-reset",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"request-password-reset"
+							]
+						},
+						"description": "🌐 Anonymous endpoint - Sends a password reset link to the user's email."
+					}
+				},
+				{
+					"name": "Validate Reset Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/User/validate-reset-token?token={{reset_token}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"validate-reset-token"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{reset_token}}"
+								}
+							]
+						},
+						"description": "🌐 Anonymous endpoint - Validates if a password reset token is valid and not expired."
+					}
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"{{reset_token}}\",\n  \"newPassword\": \"{{new_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/User/reset-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"reset-password"
+							]
+						},
+						"description": "🌐 Anonymous endpoint - Resets a user's password using a valid reset token."
+					}
+				}
+			],
+			"description": "Authentication endpoints for user login, token generation, and password reset functionality."
+		},
+		{
+			"name": "👥 User Management",
+			"item": [
+				{
+					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has pagination structure\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('items');",
+									"    pm.expect(jsonData.data).to.have.property('totalCount');",
+									"    pm.expect(jsonData.data).to.have.property('currentPage');",
+									"    pm.expect(jsonData.data).to.have.property('pageSize');",
+									"});",
+									"",
+									"// Store first user ID for other requests",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.items && jsonData.data.items.length > 0) {",
+									"        pm.environment.set(\"sample_user_id\", jsonData.data.items[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/User/getAll?page={{page}}&pageSize={{page_size}}&searchTerm={{search_term}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"getAll"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "pageSize",
+									"value": "{{page_size}}",
+									"description": "Items per page (default: 10)"
+								},
+								{
+									"key": "searchTerm",
+									"value": "{{search_term}}",
+									"description": "Search term for filtering"
+								}
+							]
+						},
+						"description": "🔒 JWT Required - Retrieves a paginated list of users with optional filtering."
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/User/getById/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"getById",
+								"{{user_id}}"
+							]
+						},
+						"description": "🔒 JWT Required - Retrieves a specific user by their ID."
+					}
+				},
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Store created user ID",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data && jsonData.data.id) {",
+									"        pm.environment.set(\"created_user_id\", jsonData.data.id);",
+									"        console.log(\"Created user ID saved: \" + jsonData.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{new_user_name}}\",\n  \"email\": \"{{new_user_email}}\",\n  \"street\": \"{{new_user_street}}\",\n  \"zip\": \"{{new_user_zip}}\",\n  \"pec\": \"{{new_user_pec}}\",\n  \"isCompany\": {{new_user_is_company}},\n  \"isActive\": true,\n  \"sdi\": \"{{new_user_sdi}}\",\n  \"vatCode\": \"{{new_user_vat_code}}\",\n  \"phone\": \"{{new_user_phone}}\",\n  \"roleId\": {{new_user_role_id}},\n  \"municipality\": {\n    \"value\": {{new_user_municipality_id}}\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/User/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"create"
+							]
+						},
+						"description": "🔒 JWT Required - Creates a new user with auto-generated password sent via email."
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": {{user_id}},\n  \"name\": \"{{updated_user_name}}\",\n  \"email\": \"{{updated_user_email}}\",\n  \"street\": \"{{updated_user_street}}\",\n  \"zip\": \"{{updated_user_zip}}\",\n  \"pec\": \"{{updated_user_pec}}\",\n  \"isCompany\": {{updated_user_is_company}},\n  \"isActive\": true,\n  \"sdi\": \"{{updated_user_sdi}}\",\n  \"vatCode\": \"{{updated_user_vat_code}}\",\n  \"phone\": \"{{updated_user_phone}}\",\n  \"roleId\": {{updated_user_role_id}},\n  \"municipality\": {\n    \"value\": {{updated_user_municipality_id}}\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/User/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"update"
+							]
+						},
+						"description": "🔒 JWT Required - Updates an existing user."
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/User/delete/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"delete",
+								"{{user_id}}"
+							]
+						},
+						"description": "🔒 JWT Required - Soft deletes a user (marks as deleted)."
+					}
+				},
+				{
+					"name": "Check Email Uniqueness",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/User/isEmailUnique/{{email_to_check}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"isEmailUnique",
+								"{{email_to_check}}"
+							]
+						},
+						"description": "🔒 JWT Required - Checks if an email address is available for registration."
+					}
+				}
+			],
+			"description": "User management endpoints for creating, reading, updating, and deleting users."
+		},
+		{
+			"name": "🏢 Tenant Management",
+			"item": [
+				{
+					"name": "Get All Tenants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Store first tenant ID for other requests",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.items && jsonData.data.items.length > 0) {",
+									"        pm.environment.set(\"sample_tenant_id\", jsonData.data.items[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/Tenant/getAll?page={{page}}&pageSize={{page_size}}&searchTerm={{search_term}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Tenant",
+								"getAll"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "pageSize",
+									"value": "{{page_size}}",
+									"description": "Items per page (default: 10)"
+								},
+								{
+									"key": "searchTerm",
+									"value": "{{search_term}}",
+									"description": "Search term for filtering"
+								}
+							]
+						},
+						"description": "🌐 Anonymous - Retrieves a paginated list of tenants. Access is role-based."
+					}
+				},
+				{
+					"name": "Get Tenant by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/Tenant/getById/{{tenant_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Tenant",
+								"getById",
+								"{{tenant_id}}"
+							]
+						},
+						"description": "🔒 JWT Required - Retrieves a specific tenant by ID."
+					}
+				},
+				{
+					"name": "Create Tenant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Store created tenant ID",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data && jsonData.data.id) {",
+									"        pm.environment.set(\"created_tenant_id\", jsonData.data.id);",
+									"        console.log(\"Created tenant ID saved: \" + jsonData.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{new_tenant_name}}\",\n  \"configuration\": \"{{new_tenant_configuration}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Tenant/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Tenant",
+								"create"
+							]
+						},
+						"description": "🔒 JWT Required - Creates a new tenant."
+					}
+				},
+				{
+					"name": "Update Tenant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": {{tenant_id}},\n  \"name\": \"{{updated_tenant_name}}\",\n  \"configuration\": \"{{updated_tenant_configuration}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Tenant/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Tenant",
+								"update"
+							]
+						},
+						"description": "🔒 JWT Required - Updates an existing tenant."
+					}
+				},
+				{
+					"name": "Delete Tenant",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/Tenant/delete/{{tenant_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Tenant",
+								"delete",
+								"{{tenant_id}}"
+							]
+						},
+						"description": "🔒 JWT Required - Soft deletes a tenant (marks as deleted)."
+					}
+				}
+			],
+			"description": "Tenant management endpoints for creating, reading, updating, and deleting tenants."
+		},
+		{
+			"name": "🔑 API Key Management",
+			"item": [
+				{
+					"name": "Get All API Keys",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Store first API key ID for other requests",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.items && jsonData.data.items.length > 0) {",
+									"        pm.environment.set(\"sample_api_key_id\", jsonData.data.items[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiKey/getAll?page={{page}}&pageSize={{page_size}}&searchTerm={{search_term}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ApiKey",
+								"getAll"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "pageSize",
+									"value": "{{page_size}}",
+									"description": "Items per page (default: 10)"
+								},
+								{
+									"key": "searchTerm",
+									"value": "{{search_term}}",
+									"description": "Search term for filtering"
+								}
+							]
+						},
+						"description": "🔒 JWT Required - Retrieves a paginated list of API keys."
+					}
+				},
+				{
+					"name": "Get API Key by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiKey/getById/{{api_key_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ApiKey",
+								"getById",
+								"{{api_key_id}}"
+							]
+						},
+						"description": "🔒 JWT Required - Retrieves a specific API key by ID."
+					}
+				},
+				{
+					"name": "Create API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Store created API key",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data) {",
+									"        pm.environment.set(\"created_api_key_id\", jsonData.data.id);",
+									"        pm.environment.set(\"created_api_key\", jsonData.data.key);",
+									"        console.log(\"Created API key saved: \" + jsonData.data.key);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{new_api_key_name}}\",\n  \"allowedIp\": \"{{new_api_key_allowed_ip}}\",\n  \"isActive\": true,\n  \"description\": \"{{new_api_key_description}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ApiKey/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ApiKey",
+								"create"
+							]
+						},
+						"description": "🔒 JWT Required - Creates a new API key. The key is auto-generated."
+					}
+				},
+				{
+					"name": "Update API Key",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": {{api_key_id}},\n  \"key\": \"{{existing_api_key}}\",\n  \"name\": \"{{updated_api_key_name}}\",\n  \"allowedIp\": \"{{updated_api_key_allowed_ip}}\",\n  \"isActive\": {{updated_api_key_is_active}},\n  \"description\": \"{{updated_api_key_description}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ApiKey/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ApiKey",
+								"update"
+							]
+						},
+						"description": "🔒 JWT Required - Updates an existing API key."
+					}
+				},
+				{
+					"name": "Delete API Key",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiKey/delete/{{api_key_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ApiKey",
+								"delete",
+								"{{api_key_id}}"
+							]
+						},
+						"description": "🔒 JWT Required - Soft deletes an API key (marks as deleted)."
+					}
+				},
+				{
+					"name": "Get API Key for Tenant",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ApiKey/{{tenant_id}}/apikey",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ApiKey",
+								"{{tenant_id}}",
+								"apikey"
+							]
+						},
+						"description": "🌐 Anonymous - Retrieves the API key associated with a specific tenant."
+					}
+				}
+			],
+			"description": "API key management endpoints for creating, reading, updating, and deleting API keys."
+		},
+		{
+			"name": "📋 Getting Started (Simplified)",
+			"item": [
+				{
+					"name": "1. Get Session Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Extract and store JWT token",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data) {",
+									"        pm.environment.set(\"jwt_token\", jsonData.data);",
+									"        console.log(\"Session token saved for getting started flow\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/Token/generate-from-apikey",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Token",
+								"generate-from-apikey"
+							]
+						},
+						"description": "🔑 Step 1: Authenticate using your global API Key to generate a temporary JWT session token."
+					}
+				},
+				{
+					"name": "2. Get Subscription Plans",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Store first plan ID for subscription",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.items && jsonData.data.items.length > 0) {",
+									"        pm.environment.set(\"plan_id\", jsonData.data.items[0].id);",
+									"        console.log(\"Plan ID saved: \" + jsonData.data.items[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/Plan/getAll",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Plan",
+								"getAll"
+							]
+						},
+						"description": "🔒 Step 2: Retrieve a list of all available subscription plans to display to your users."
+					}
+				},
+				{
+					"name": "3. Create a Subscription (Checkout)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Store subscription ID",
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data && jsonData.data.id) {",
+									"        pm.environment.set(\"subscription_id\", jsonData.data.id);",
+									"        console.log(\"Subscription ID saved: \" + jsonData.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userID\": {{user_id}},\n  \"planID\": {{plan_id}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/Subscription/subscribe",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"Subscription",
+								"subscribe"
+							]
+						},
+						"description": "🔒 Step 3: Create a new subscription for a user to a specific plan. This is the core of the checkout process."
+					}
+				}
+			],
+			"description": "Simplified 3-step workflow for getting started with ShipYo API - Authentication, Plans, and Subscription."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-set common variables if they don't exist",
+					"if (!pm.environment.get(\"page\")) {",
+					"    pm.environment.set(\"page\", \"1\");",
+					"}",
+					"if (!pm.environment.get(\"page_size\")) {",
+					"    pm.environment.set(\"page_size\", \"10\");",
+					"}",
+					"",
+					"// Log current environment for debugging",
+					"console.log(\"Current environment: \" + pm.environment.name);",
+					"console.log(\"Base URL: \" + pm.environment.get(\"base_url\"));",
+					"console.log(\"API Key: \" + (pm.environment.get(\"api_key\") ? \"[PRESENT]\" : \"[MISSING]\"));",
+					"console.log(\"JWT Token: \" + (pm.environment.get(\"jwt_token\") ? \"[PRESENT]\" : \"[MISSING]\"));"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test for all requests",
+					"pm.test(\"Response time is less than 5000ms\", function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});",
+					"",
+					"// Check if response is JSON",
+					"pm.test(\"Response is JSON\", function () {",
+					"    pm.response.to.be.json;",
+					"});",
+					"",
+					"// Log response for debugging",
+					"if (pm.response.code >= 400) {",
+					"    console.log(\"Error Response: \" + pm.response.text());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://shipyo.it",
+			"type": "string"
+		}
+	]
+}
